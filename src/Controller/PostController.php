@@ -17,6 +17,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class PostController extends AbstractController
 {
 
+
+
     /**
      * Ovde dodajemo format, i kazemo da moze da bude samo xml ili json,
      * da ne bismo mogli da kucamo npr : all.dasdadas vec samo
