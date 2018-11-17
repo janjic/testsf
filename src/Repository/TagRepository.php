@@ -30,4 +30,38 @@ class TagRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Tag::class);
     }
+
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getTag($id)
+    {
+        /**
+         * Ove moze da stoji bilo stane mora post, moze npr. p ili po ili sta god,
+         * Bitno je samo da posle preko toga pristupas cemu treba u upitu, ovde npr. id-ju
+         */
+        $qb = $this->createQueryBuilder('tag')
+            ->where('tag.id= :parameter_id')
+            ->setParameter('parameter_id', $id);
+
+        return $qb->getQuery()->getOneOrNullResult();
+
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getTagByName($name)
+    {
+        $qb = $this->createQueryBuilder('tag')
+            ->where('tag.name = :parameter_name')
+            ->setParameter('parameter_name', $name);
+
+        return $qb->getQuery()->getOneOrNullResult();
+
+    }
 }

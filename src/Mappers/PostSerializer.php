@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Ideja je da se ova klasa koristi za
@@ -27,14 +28,29 @@ class PostSerializer
         'attributes' =>
             array(
                 'id',
-                'email',
-                'username',
-                'fullName',
+                'title',
+                'slug',
+                'summary',
+                'content',
+                'publishedAt',
                 'author'=> ['id', 'fullName', 'username'],
                 'tags'=> ['id', 'name'],
                 'comments'=> ['id', 'content', 'publishedAt',
                     'author'=> ['id', 'fullName']
                 ]
+            )
+    );
+
+    public static $POST_NEW_MAPPING = array(
+        'attributes' =>
+            array(
+                'id',
+                'title',
+                'slug',
+                'summary',
+                'content',
+                'author'=> ['id'],
+                'tags' => ['name']
             )
     );
     /**
@@ -70,6 +86,21 @@ class PostSerializer
     public static function serializePosts($posts, $format)
     {
         return self::createSerializer()->serialize($posts, $format, self::$POSTS_MAPPING);
+
+    }
+
+    public static function deserializeNewPost($data, $format)
+    {
+        return self::createSerializer()->deserialize($data, Post::class, $format, self::$POST_NEW_MAPPING);
+
+    }
+
+    public static function deserializeEditPost($data, $format, Post $postForEdit)
+    {
+        $editMapping = self::$POST_NEW_MAPPING;
+        $editMapping['attributes']['tags'] = ['id', 'name'];
+        $editMapping['object_to_populate'] = $postForEdit;
+        return self::createSerializer()->deserialize($data, Post::class, $format, $editMapping);
 
     }
 }

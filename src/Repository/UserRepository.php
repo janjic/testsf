@@ -46,13 +46,20 @@ class UserRepository extends ServiceEntityRepository
 
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function getUser($id)
     {
         $qb = $this->createQueryBuilder('u')
             ->where('u.id= :user_id')
             ->setParameter('user_id', $id);
 
-        return $qb->getQuery()->execute();
+        //Kada nam treba jedan rezultat zovemo getSingleResult
+        return $qb->getQuery()->getSingleResult();
 
     }
 }

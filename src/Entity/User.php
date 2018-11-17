@@ -71,6 +71,14 @@ class User implements UserInterface, \Serializable
         $this->fullName = $fullName;
     }
 
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
     public function getFullName(): string
     {
         return $this->fullName;

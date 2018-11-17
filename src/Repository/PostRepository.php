@@ -17,9 +17,14 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 
 class PostRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $userRepository;
+    private $tagRepository;
+
+    public function __construct(ManagerRegistry $registry, UserRepository $userRepository, TagRepository $tagRepository)
     {
         parent::__construct($registry, Post::class);
+        $this->userRepository = $userRepository;
+        $this->tagRepository = $tagRepository;
     }
 
     public function getAllPosts()
@@ -27,6 +32,48 @@ class PostRepository extends ServiceEntityRepository
         return $this->findAll();
     }
 
+    /**
+     * Ova metoda je bitna jako zbog veza i cuvanja veza
+     * @param Post $post
+     * @return Post|array
+     */
+    public function savePost(Post $post)
+    {
+        try {
+            //Ovaj author je nastao procesom deserializacije, ali on nema doctrine podatke,tj. nije iz baze
+            $author = $post->getAuthor();
+            //Da bi se sacuvao entitet on mora biti iz baze
+            $authorFromDb = $this->userRepository->getUser($author->getId());
+            $post->setAuthor($authorFromDb);
+
+            foreach ($post->getTags() as $tag) {
+                $dbTag = $this->tagRepository->getTagByName($tag->getName());
+                if ($dbTag) {
+                    //Ako vec taj postoji u bazi, izbaci trenutni i ubaci iz baze
+                    $post->removeTag($tag);
+                    $post->addTag($dbTag);
+                }
+            }
+            //JAKO BITNO:  TAGOVI SE CUVAJU SAMO POSTO IMAJU cascade={"persist"}
+            //DA NEMAJU MORALI BI DA INJECTUJEMO I NJIHOV RIPOSITORY I DA CUVAMO tag po tag
+            $this->getEntityManager()->persist($post);
+            $this->getEntityManager()->flush();
+        } catch (\Exception $e) {
+            return array(
+                'status' => 'Error',
+                'message' => $e->getMessage()
+            );
+        }
+
+        return $post;
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function getPost($id)
     {
         /**
@@ -38,7 +85,7 @@ class PostRepository extends ServiceEntityRepository
             ->where('post.id= :parameter_id')
             ->setParameter('parameter_id', $id);
 
-        return $qb->getQuery()->execute();
+        return $qb->getQuery()->getSingleResult();
 
     }
 }
