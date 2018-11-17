@@ -2,15 +2,14 @@
 
 
 namespace App\Controller;
+use App\Entity\Post;
+use App\Mappers\PostSerializer;
 use App\Repository\PostRepository;
-use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * @Route("/api/posts")
@@ -19,52 +18,45 @@ class PostController extends AbstractController
 {
 
     /**
-     * @Route("/all", methods={"GET"}, name="posts_all")
+     * Ovde dodajemo format, i kazemo da moze da bude samo xml ili json,
+     * da ne bismo mogli da kucamo npr : all.dasdadas vec samo
+     * all.json ili all.xml
+     *
+     *
+     * @Route("/all.{format}", methods={"GET"}, name="posts_all", requirements={"format": "xml|json"})
+     * @param Request        $request
+     * @param PostRepository $postRepository
+     * @return Response
+     */
+    public function allPosts(Request $request, $format, PostRepository $postRepository): Response
+    {
+        $postsFromDatabase = $postRepository->getAllPosts();
+        $data = PostSerializer::serializePosts($postsFromDatabase, $format);
+        $response = new Response($data);
+        if ($format === 'xml') {
+            $response->headers->set('Content-Type', 'xml');
+        } else {
+            $response->headers->set('Content-Type', 'application/json');
+        }
+        return $response;
+    }
+
+    /**
+     * @Route("/{id}.{format}", methods={"GET"}, name="one_post", requirements={"format": "xml|json"})
      * @param Request        $request
      * @param PostRepository $postRepository
      * @return JsonResponse
      */
-    public function allPosts(Request $request, PostRepository $postRepository): JsonResponse
+    public function post(Request $request, $id, $format, PostRepository $postRepository): Response
     {
-        $normalizer = new ObjectNormalizer();
-        //$normalizer->setCircularReferenceLimit(3);
-        $callback = function ($dateTime) {
-            return $dateTime instanceof \DateTime
-                ? $dateTime->format('Y-m-d H:i:s')
-                : '';
-        };
-
-        $normalizer->setCallbacks(array('publishedAt' => $callback));
-        //$normalizer->setIgnoredAttributes(array('age'));
-        $encoder = new JsonEncoder();
-
-        $serializer = new Serializer(array($normalizer), array($encoder));
-        $mappings = array('attributes' =>
-            array(
-                'id',
-                'title',
-                'slug',
-                'content',
-                'author'=> ['id', 'fullName', 'username'],
-                'tags'=> ['id', 'name'],
-                'comments'=> ['id', 'content', 'publishedAt',
-                              'author'=> ['id', 'fullName']
-                             ]
-            ));
-        $data = $serializer->normalize($postRepository->getAllPosts(), 'json', $mappings);
-
-        return $this->json($data);
+        $postFromDatabase = $postRepository->getPost($id);
+        $data = PostSerializer::serializePosts($postFromDatabase, $format);
+        $response = new Response($data);
+        if ($format === 'xml') {
+            $response->headers->set('Content-Type', 'xml');
+        } else {
+            $response->headers->set('Content-Type', 'application/json');
+        }
+        return $response;
     }
-
-//    /**
-//     * @Route("/{id}", methods={"GET"}, name="one_user")
-//     * @param Request        $request
-//     * @param UserRepository $userRepository
-//     * @return JsonResponse
-//     */
-//    public function user(Request $request, $id, UserRepository $userRepository): JsonResponse
-//    {
-//
-//        return $this->json($userRepository->getUser($id));
-//    }
 }
