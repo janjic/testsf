@@ -18,6 +18,8 @@ use Symfony\Component\Serializer\Serializer;
 class PostController extends AbstractController
 {
 
+
+
     /**
      * @Route("/all", methods={"GET"}, name="posts_all")
      * @param Request        $request
