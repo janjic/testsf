@@ -20,8 +20,7 @@ class PostController extends AbstractController
     /**
      * Ovde dodajemo format, i kazemo da moze da bude samo xml ili json,
      * da ne bismo mogli da kucamo npr : all.dasdadas vec samo
-     * all.json ili all.xml
-     *
+     * all.json ili all.xml. Dodali smo i paginaciju!!!!
      *
      * @Route("/all.{format}", methods={"GET"}, name="posts_all", requirements={"format": "xml|json"})
      * @param Request        $request
