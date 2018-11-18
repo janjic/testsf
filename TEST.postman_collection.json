@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "{{server}}/api/users/all",
+			"name": "All Users",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -15,9 +15,9 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{server}}/api/users/all",
+					"raw": "{{serverAddress}}/api/users/all",
 					"host": [
-						"{{server}}"
+						"{{serverAddress}}"
 					],
 					"path": [
 						"api",
@@ -29,9 +29,9 @@
 			"response": []
 		},
 		{
-			"name": "{{server}}/api/posts/new.json",
+			"name": "New user",
 			"request": {
-				"method": "PUT",
+				"method": "POST",
 				"header": [
 					{
 						"key": "Content-Type",
@@ -45,9 +45,9 @@
 					"raw": " {\n    \"title\": \"dsadsaddasda1\",\n    \"slug\": \"dasasdasdas12312321\",\n    \"content\": \"dsadsadsadaq1231231\",\n    \"author\": {\n      \"id\": 6\n    },\n    \"summary\": \"Adasdasdasdas\",\n    \"tags\": [\n      {\n        \"name\": \"Tag 812 NEWq\"\n      },\n      {\n        \"name\": \"Tag dsa9 NEWqw\"\n      },\n      {\n        \"name\": \"NEW NEWwq121112321\"\n      }\n    ]\n  }"
 				},
 				"url": {
-					"raw": "{{server}}/api/posts/edit/3.json",
+					"raw": "{{serverAddress}}/api/posts/edit/3.json",
 					"host": [
-						"{{server}}"
+						"{{serverAddress}}"
 					],
 					"path": [
 						"api",
@@ -60,7 +60,7 @@
 			"response": []
 		},
 		{
-			"name": "{{server}}/api/posts/edit/3.json",
+			"name": "Edit User",
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -76,9 +76,9 @@
 					"raw": " {\n    \"title\": \"dsadsaddasda1\",\n    \"slug\": \"dasasdasdas12312321\",\n    \"content\": \"dsadsadsadaq1231231\",\n    \"author\": {\n      \"id\": 6\n    },\n    \"summary\": \"Adasdasdasdas\",\n    \"tags\": [\n      {\n        \"name\": \"Tag 812 NEWq\"\n      },\n      {\n        \"name\": \"Tag dsa9 NEWqw\"\n      },\n      {\n        \"name\": \"NEW NEWwq121112321\"\n      }\n    ]\n  }"
 				},
 				"url": {
-					"raw": "{{server}}/api/posts/edit/3.json",
+					"raw": "{{serverAddress}}/api/posts/edit/3.json",
 					"host": [
-						"{{server}}"
+						"{{serverAddress}}"
 					],
 					"path": [
 						"api",
@@ -89,6 +89,36 @@
 				}
 			},
 			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "5f4a9a55-7563-47a5-994b-05015c2366b4",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "c2d32296-d9f4-4a52-99bd-ded392ed4e01",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "69222906-e215-4c93-b7b2-8248a303c9b2",
+			"key": "serverAddress",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
 		}
 	]
 }
