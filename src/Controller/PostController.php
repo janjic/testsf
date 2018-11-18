@@ -25,12 +25,13 @@ class PostController extends AbstractController
      *
      * @Route("/all.{format}", methods={"GET"}, name="posts_all", requirements={"format": "xml|json"})
      * @param Request        $request
+     * @param                $format
      * @param PostRepository $postRepository
      * @return Response
      */
     public function allPosts(Request $request, $format, PostRepository $postRepository): Response
     {
-        $postsFromDatabase = $postRepository->getAllPosts();
+        $postsFromDatabase = $postRepository->getAllPosts($request->get('limit'), $request->get('perPage'), $request->get('page'));
         $data = PostSerializer::serializePosts($postsFromDatabase, $format);
         $response = new Response($data);
         if ($format === 'xml') {

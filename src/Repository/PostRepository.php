@@ -27,9 +27,24 @@ class PostRepository extends ServiceEntityRepository
         $this->tagRepository = $tagRepository;
     }
 
-    public function getAllPosts()
+    public function getAllPosts($limit=null, $perPage=null, $page=null)
     {
-        return $this->findAll();
+        if(!$page) {
+            $page = 1;
+        }
+        $offset = null;
+        if ($page && $perPage) {
+            $offset = ($page - 1) * $perPage;
+            $limit = $perPage;
+        }
+        return
+            array(
+                'data'=>$this->findBy([],null, $limit, $offset),
+                'meta'=> array(
+                    'count' => $count = $this->count([]),
+                    'page' => $page
+                )
+            );
     }
 
     /**
